@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="DefaultConnection-Web.config Connection String" description="DefaultConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=rds-mysql-tuneworlddb.ckvz7fwpemm2.us-east-1.rds.amazonaws.com;Database=TuneWorldDB;User Id=masterUsername;       Password=hbaruosnSJSU21;MultipleActiveResultSets=True" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\sourabh\\source\\repos\\TuneWorldFinal\\TuneWorldFinal\\obj\\Debug\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  </parameter>
+  <parameter name="TuneWorldDBEntities-Web.config Connection String" description="TuneWorldDBEntities Connection String used in web.config by the application to access the database." defaultValue="metadata=res://*/TuneWorldModel.csdl|res://*/TuneWorldModel.ssdl|res://*/TuneWorldModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=rds-mysql-tuneworlddb.ckvz7fwpemm2.us-east-1.rds.amazonaws.com;initial catalog=TuneWorldDB;user id=masterUsername;password=hbaruosnSJSU21;multipleactiveresultsets=True;App=EntityFramework&quot;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\sourabh\\source\\repos\\TuneWorldFinal\\TuneWorldFinal\\obj\\Debug\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='TuneWorldDBEntities']/@connectionString" />
+  </parameter>
+</parameters>

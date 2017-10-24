@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <setParameter name="IIS Web Application Name" value="Default Web Site/" />
+  <setParameter name="DefaultConnection-Web.config Connection String" value="Data Source=rds-mysql-tuneworlddb.ckvz7fwpemm2.us-east-1.rds.amazonaws.com;Database=TuneWorldDB;User Id=masterUsername;       Password=hbaruosnSJSU21;MultipleActiveResultSets=True" />
+  <setParameter name="TuneWorldDBEntities-Web.config Connection String" value="metadata=res://*/TuneWorldModel.csdl|res://*/TuneWorldModel.ssdl|res://*/TuneWorldModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=rds-mysql-tuneworlddb.ckvz7fwpemm2.us-east-1.rds.amazonaws.com;initial catalog=TuneWorldDB;user id=masterUsername;password=hbaruosnSJSU21;multipleactiveresultsets=True;App=EntityFramework&quot;" />
+</parameters>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TuneWorldDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Objects">
+    <Key>
+      <PropertyRef Name="ObjectId" />
+    </Key>
+    <Property Name="ObjectId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+    <Property Name="ObjectName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="ObjectDesc" Type="nvarchar" MaxLength="50" />
+    <Property Name="ObjectUploadLink" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="ObjectDownloadLink" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="ObjectUpdateTime" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="MakePublic" Type="bit" Nullable="false" />
+    <Property Name="SongName" Type="nvarchar" MaxLength="50" />
+    <Property Name="Language" Type="nvarchar" MaxLength="50" />
+    <Property Name="Genre" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityContainer Name="TuneWorldDBModelStoreContainer">
+    <EntitySet Name="Objects" EntityType="Self.Objects" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

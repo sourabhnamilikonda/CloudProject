@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
+    <title>Tune Your World - Registration</title>
+    <style>
+        html {
+            height: 100%;
+            background-color: rgba(116,175,173,21);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        $(document).ready(function () {
+            $('#signUpForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var fn = $('#fn').val();
+                var ln = $('#ln').val();
+                var email = $('#email').val();
+                var pwd = $('#pwd').val();
+                
+                $.ajax({
+                    url: '/api/account/register',
+                    method: 'POST',
+                    data: {
+                        firstname: fn,
+                        lastname: ln,
+                        email: email,
+                        password: pwd,
+                        confirmPassword: pwd
+                    },
+                    success: function () {
+                        $('#divRegisterSuccess').modal('show');
+                    },
+                    error: function (jqXHR) {
+                        $('#divRegErrorText').text(jqXHR.responseText);
+                        $('#divRegError').show('fade');
+                    }
+                });
+
+            });
+
+            $('#linkclose').click(function(){
+                $('#divRegError').hide('fade');
+            });
+        });
+    </script>
+    <div class="well row">
+        <div class="col-sm-3 col-sm-offset-5" style="border-radius:10px;border:double;border-width:thick;border-color:white;justify-content:center;background-color:black;color:white;padding: 3px">
+            <form method="get" id="signUpForm" name="signUpForm">
+                <table style="padding:inherit">
+                    <tr style="padding:3px">
+                        <td>
+                            <label>First Name:</label>
+                        </td>
+                        <td>
+                            <input type="text" style="padding:3px;color:black" id="fn" name="fn" placeholder="enter first name" required pattern="[A-Za-z]{1,40}" title="Letters Only" />
+                        </td>
+                    </tr>
+                    <tr style="padding:3px">
+                        <td>
+                            <label>Last Name:</label>
+                        </td>
+                        <td>
+                            <input type="text" style="padding:3px;color:black" id="ln" name="ln" placeholder="enter last name" required pattern="[A-Za-z]{1,40}" title="Letters Only" />
+                        </td>
+                    </tr>
+                    <tr style="padding:3px">
+                        <td>
+                            <label>EmailId:</label>
+                        </td>
+                        <td>
+                            <input type="email" style="padding:3px;color:black" id="email" placeholder="emailid" name="email" required title="Enter Valid Email" />
+                        </td>
+                    </tr>
+                    <tr style="padding:3px">
+                        <td>
+                            <label>Password:</label>
+                        </td>
+                        <td>
+                            <input type="password" style="padding:3px;color:black" id="pwd" placeholder="password" name="pwd" required pattern=".{6,25}" title="Minimum 6 characters" />
+                        </td>
+                    </tr>
+                </table>
+                <div style="padding:3px">
+                    <input type="submit" class="btn btn-info" value="Register" style="padding:4px">
+                    <a type="button" class="btn btn-info" href="Index.html" style="padding:4px;">Login</a>
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="1" id="divRegisterSuccess" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        &times;
+                    </button>
+                    <h4>success</h4>
+                </div>
+                <div class="modal-body">
+                    <h2>Registration Success.</h2>
+                    <h4>Email sent please confirm.</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-success">
+                        close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="divRegError" class="alert alert-danger collapse">
+        <a id="linkclose" class="close" href="#">&times;</a>
+        <div id="divRegErrorText">
+
+        </div>
+    </div>
+</body>
+</html>

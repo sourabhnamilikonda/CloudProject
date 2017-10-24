@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tune Your World</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
+    <style>
+        html {
+            height: 100%;
+            background-color: rgba(116,175,173,21);
+        }
+        #applyCSS * {
+            border-radius: 75px;
+            background: #73AD21;
+            padding: 10px
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            border-bottom: 16px solid blue;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        input[type=text] {
+            width: 130px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            background-image: url(search.png);
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            padding: 12px 20px 12px 40px;
+            -webkit-transition: width 0.4s ease-in-out;
+            transition: width 0.4s ease-in-out;
+        }
+
+            input[type=text]:focus {
+                width: 100%;
+            }
+
+
+        .styled-select {
+            background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 0;
+            height: 29px;
+            overflow: hidden;
+            width: 240px;
+        }
+
+        .styled-select select {
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            height: 29px;
+            padding: 5px; /* If you add too much padding here, the options won't show in IE */
+            width: 268px;
+        }
+
+        .styled-select.slate {
+            background: url(http://i62.tinypic.com/2e3ybe1.jpg) no-repeat right center;
+            height: 34px;
+            width: 240px;
+        }
+
+        .styled-select.slate select {
+            border: 1px solid #ccc;
+            font-size: 16px;
+            height: 34px;
+            width: 268px;
+        }
+
+        /* -------------------- Rounded Corners */
+        .rounded {
+            -webkit-border-radius: 20px;
+            -moz-border-radius: 20px;
+            border-radius: 20px;
+        }
+
+        .semi-square {
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+        }
+
+        /* -------------------- Colors: Background */
+        .slate {
+            background-color: #ddd;
+        }
+
+        /* -------------------- Colors: Text */
+        .slate select {
+            color: #000;
+        }
+
+        #mainselection select {
+            border: 0;
+            color: #EEE;
+            background: transparent;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 2px 10px;
+            width: 378px;
+            *width: 350px;
+            *background: #58B14C;
+            -webkit-appearance: none;
+        }
+
+        #mainselection {
+            overflow: hidden;
+            width: 350px;
+            -moz-border-radius: 9px 9px 9px 9px;
+            -webkit-border-radius: 9px 9px 9px 9px;
+            border-radius: 9px 9px 9px 9px;
+            box-shadow: 1px 1px 11px #330033;
+            background: #58B14C url("http://i62.tinypic.com/15xvbd5.png") no-repeat scroll 319px center;
+        }
+
+
+        /* -------------------- Select Box Styles: stackoverflow.com Method */
+        /* -------------------- Source: http://stackoverflow.com/a/5809186 */
+        select#soflow, select#soflow-color {
+            -webkit-appearance: button;
+            -webkit-border-radius: 2px;
+            -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+            -webkit-padding-end: 20px;
+            -webkit-padding-start: 2px;
+            -webkit-user-select: none;
+            background-image: url(http://i62.tinypic.com/15xvbd5.png), -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+            background-position: 97% center;
+            background-repeat: no-repeat;
+            border: 1px solid #AAA;
+            color: #555;
+            font-size: inherit;
+            margin: 20px;
+            overflow: hidden;
+            padding: 5px 10px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 300px;
+        }
+
+        select#soflow-color {
+            color: #fff;
+            background-image: url(http://i62.tinypic.com/15xvbd5.png), -webkit-linear-gradient(#779126, #779126 40%, #779126);
+            background-color: #779126;
+            -webkit-border-radius: 20px;
+            -moz-border-radius: 20px;
+            border-radius: 20px;
+            padding-left: 15px;
+        }
+
+    </style>
+</head>
+<body>
+    <script>
+        $(document).ready(function () {
+            $('#linkclose').click(function () {
+                $('#divRegError').hide('fade');
+            });
+
+            $('#signInForm').on('submit', (function (e) {
+                e.preventDefault();
+
+                //$('#loaderdiv').css('display','inline-block');
+
+                var un = $('#un').val();
+                var pwd = $('#pwd').val();
+
+                $.ajax({
+                    url: '/token',
+                    method: 'POST',
+                    contentType:'application/json',
+                    data: {
+                        username: un,
+                        password: pwd,
+                        grant_type:'password'
+                    },
+                    success: function (resp) {
+                        //$('#loaderdiv').css('display', 'hidden');
+                        sessionStorage.setItem('usertoken', resp.access_token);
+                        sessionStorage.setItem('username', resp.userName);
+                        window.location.href = "ObjectExplorer.html";
+                    },
+                    error: function (jqXHR) {
+                        //$('#loaderdiv').css('display', 'hidden');
+                        $('#divRegErrorText').text(jqXHR.responseJSON.error_description);
+                        $('#divRegError').show('fade');
+                    }
+                });
+            }));
+
+            $('#frmPublicSearch').on('submit', (function (e) {
+                e.preventDefault();
+
+                var searchterm = $('#txtPublicSearch').val();
+
+                var category= $('#selPublicSearch :selected').text();
+
+                $.ajax({
+                    url: '/api/object?searchterm=' + searchterm +'&category=' + category,
+                    method: 'GET',
+                    
+                    success: function (data) {
+                        $('#divdatatablepublic').removeClass('hidden');
+                        $('#tblObjectsPublicBody').empty();
+                        $.each(data, function (index, value) {
+                            var downloadhtml = '<a class="btn btn-info" href="' + value.ObjectDownloadLink + '" download="' + value.ObjectName + '">Download</a>';
+                            
+                            var row = $('<tr><td>' + value.ObjectName + '</td><td>' +
+                                value.ObjectDesc + '</td><td>' + downloadhtml + '</td><td>' +
+                                value.ObjectUpdateTime + '</td><td>' + value.SongName + '</td><td>' + value.Language + '</td><td>' + value.Genre +
+                                '</td></tr>');
+                            $('#tblObjectsPublic').append(row);
+                        });
+                    },
+                    error: function (jqXHR) {
+                        var s = "";
+                    }
+                });
+            }));
+        });
+    </script>
+    <div class="applyCSS container-fluid" style="background-color:black">
+        <div class="row">
+            <div class="col-sm-9 ">
+                <h4 style="color:white">Tune World</h4>
+            </div>
+            <div class="col-sm-1">
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo" style="margin: 2px 0px 2px 0px;">Login</button>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-info" href="Registration.html" style="margin: 2px 0px 2px 0px;">New Registration</a>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="padding: 5px">
+        <div class="col-sm-offset-9" style="background-color:black">
+            <div id="demo" class="collapse container-fluid" style="color:white;z-index:3;position:absolute;background-color:black;border-radius:10px;border:double;border-width:thick;border-color:white;">
+                <form method="get" id="signInForm" name="signInForm">
+                    <table style="background-color:inherit;padding:7px;margin:5px">
+                        <tr>
+                            <td>
+                                <label>Username:</label>
+                            </td>
+                            <td>
+                                <input type="email" style="padding:3px;color:black" placeholder="emailid" id="un" name="un" required />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Password:</label>
+                            </td>
+                            <td>
+                                <input type="password" style="padding:3px;color:black" id="pwd" placeholder="password" name="pwd" required pattern=".{6,25}" title="Minimum 6 characters" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="padding: 3px">
+                        <input id="btnGo" type="submit" class="btn btn-info" value="Go">
+                        <!--<div id="loaderdiv" class="loader" style="visibility:hidden"></div>-->
+                    </div>
+                    <div id="divRegError" class="alert alert-danger collapse">
+                        <a id="linkclose" class="close" href="#">&times;</a>
+                        <div id="divRegErrorText">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div style="height:100%;padding-top:20px;background-color: rgba(116,175,173,21);;">
+        <div style="justify-content:center; padding-top:30px;padding-left: 30px; margin: 3px;" class="well applyCSS">
+            <form method="post" id="frmPublicSearch" name="frmPublicSearch">
+                <input type="text" name="search" placeholder="Search.." id="txtPublicSearch"><br />
+                <div class="styled-select slate" style="margin-top:5px">
+                    <select id="selPublicSearch" name="selPublicSearch">
+                        <option selected>Filename</option>
+                        <option>Songname</option>
+                        <option>Genre</option>
+                        <option>Language</option>
+                    </select>
+                </div>
+                <br/>
+                <input type="submit" style="margin:3px" class="btn btn-info" value="Go" id="btnPublicSearch" name="btnPublicSearch" />
+            </form>
+            <div id="divdatatablepublic" class="well table-responsive hidden" style="background-color:transparent">
+                <table id="tblObjectsPublic" class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Description</th>
+                            <th>Download</th>
+                            <th>Create/Update Time</th>
+                            <th>Songname</th>
+                            <th>Language</th>
+                            <th>Genre</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblObjectsPublicBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

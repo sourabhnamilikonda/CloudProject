@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="TuneWorldDBModelStoreContainer" CdmEntityContainer="TuneWorldDBEntities">
+    <EntitySetMapping Name="Objects">
+      <EntityTypeMapping TypeName="TuneWorldDBModel.Object">
+        <MappingFragment StoreEntitySet="Objects">
+          <ScalarProperty Name="Genre" ColumnName="Genre" />
+          <ScalarProperty Name="Language" ColumnName="Language" />
+          <ScalarProperty Name="SongName" ColumnName="SongName" />
+          <ScalarProperty Name="ObjectId" ColumnName="ObjectId" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="ObjectName" ColumnName="ObjectName" />
+          <ScalarProperty Name="ObjectDesc" ColumnName="ObjectDesc" />
+          <ScalarProperty Name="ObjectUploadLink" ColumnName="ObjectUploadLink" />
+          <ScalarProperty Name="ObjectDownloadLink" ColumnName="ObjectDownloadLink" />
+          <ScalarProperty Name="ObjectUpdateTime" ColumnName="ObjectUpdateTime" />
+          <ScalarProperty Name="MakePublic" ColumnName="MakePublic" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

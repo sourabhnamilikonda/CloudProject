@@ -1,0 +1,349 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
+    <title>Tune Your World - Object Explorer</title>
+    <style>
+        html {
+            height: 100%;
+            background-color: rgba(116,175,173,21);
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+    </style>
+</head>
+<body style="padding-top:20px;height: 100%;background-color: rgba(116,175,173,21);">
+    <script>
+        $(document).ready(function () {
+
+            if (sessionStorage.getItem('usertoken') == null) {
+                window.location.href = "Index.html";
+            }
+
+            $('#spUN').text('Welcome ' + sessionStorage.getItem('username'));
+
+            $('#tblObjects tbody tr').on('click', function (event) {
+                $(this).addClass('info').siblings().removeClass('info');
+            });
+
+            $('#btnShow').on('click', function () {
+                $.ajax({
+                    url: '/api/object',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionStorage.getItem('usertoken')
+                    },
+                    success: function (data) {
+                        $('#datatablediv').removeClass('hidden');
+                        $('#tblObjectsBody').empty();
+                        $.each(data, function (index, value) {
+                            var chk = "";
+                            var downloadhtml = "";
+                            if (value.MakePublic) {
+                                chk = "checked";
+                                //in case of public objects use href with link in database
+                                downloadhtml = '<a class="btn btn-info" href="' + value.ObjectDownloadLink + '" download="' + value.ObjectName + '">Download</a>';
+                            }
+                            else {
+                                //not public so generate dynamic links valid for few minutes not from database
+                                downloadhtml = '<button type="button" class="btn btn-info" data-id="' + value.ObjectId + '" id="privatedownloadbutton" onclick="privatedownloadClick(this)">Download</button>';
+                            }
+                            var row = $('<tr><td>' + value.ObjectName + '</td><td>' +
+                                value.ObjectDesc + '</td><td>' + downloadhtml + '</td><td>' +
+                                value.ObjectUpdateTime + '</td><td>' + value.SongName + '</td><td>' + value.Language + '</td><td>' + value.Genre +
+                                '</td><td><input type="checkbox" ' + chk + ' disabled="disabled" />' + '</td><td><button type="button" onclick="productDelete(this)" class="btn btn-danger" data-id="' + value.ObjectId + '"> ' +
+                                '<span class="glyphicon glyphicon-remove" />' +
+                                '</button></td></tr>');
+                            $('#tblObjects').append(row);
+                        });
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status == "401") {
+                            $('#divSessionExp').modal('show');
+                        }
+                        else {
+                            $('#divRegErrorText').text(jqXHR.responseJSON.Message);
+                            $('#divRegError').show('fade');
+                        }
+                    }
+                });
+
+            });
+
+            $('#divSessionExp').on('hidden.bs.modal', function () {
+                window.location.href = "Index.html";
+            });
+
+            $('#linkclose').click(function(){
+                $('#divRegError').hide('fade');
+            });
+
+            $('#linkcloseAddFile').click(function () {
+                $('#divAddFileModalError').hide('fade');
+            });
+
+            $('#btnLogOff').click(function () {
+                sessionStorage.removeItem('usertoken');
+                sessionStorage.removeItem('username');
+                window.location.href = "Index.html";
+            });
+
+            $('#btnAdd').click(function () {
+                $('#divAddFileModalError').hide();
+                $("#txtFileDesc").val("");
+                $("#txtFileSong").val("");
+                $("#txtFileLanguage").val("");
+                $("#txtFileGenre").val("");
+                $("#fileAddFile").val("");
+                $('#divAddFileModal').modal('show');
+                $('#chkFilePublic').prop('checked', false);
+            });
+
+            $('#frmAddFile').on('submit', function (e) {
+                e.preventDefault();
+
+                //for now add only 1 file at a time
+                var file = $('#fileAddFile')[0];
+                //check filesize
+                if (file.files[0].size / 1024 / 1024 > 10) {
+                    $('#divAddFileModalErrorText').text('File size exceeded 10MB.');
+                    $('#divAddFileModalError').show('fade');
+                    return;
+                }
+                var formData = new FormData();
+                var filedesc = $('#txtFileDesc').val();
+                var filesong = $("#txtFileSong").val();
+                var filelanguage = $("#txtFileLanguage").val();
+                var filegenre = $("#txtFileGenre").val();
+                formData.append('file', file.files[0]);
+                formData.append('filedescription', filedesc);
+                formData.append('filesong', filesong);
+                formData.append('filelanguage', filelanguage);
+                formData.append('filegenre', filegenre);
+                formData.append('filepublic', $('#chkFilePublic').prop('checked'));
+
+                // Make Ajax request with the contentType = false, and procesDate = false
+                $.ajax({
+                    type: "POST",
+                    url: "/api/object",
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionStorage.getItem('usertoken')
+                    },
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (result) {
+                        $('#datatablediv').addClass('hidden');
+                        document.getElementById("lblFileAddSuccess").style.visibility = "visible";
+                        setTimeout(function () {
+                            document.getElementById("lblFileAddSuccess").style.visibility = "hidden";
+                        }, 3000);
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status == "401") {
+                            $('#divSessionExp').modal('show');
+                        }
+                        else {
+                            $('#divAddFileModalErrorText').text(jqXHR.responseJSON.Message);
+                            $('#divAddFileModalError').show('fade');
+                        }
+                    }
+                });
+            });
+        });
+
+        //use this to download on button click with url valid for short time
+        function privatedownloadClick(ctl) {
+            var id = $(ctl).data("id");
+            $.ajax({
+                url: "/api/object/" + parseInt(id),
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('usertoken')
+                },
+                success: function (content) {
+                    var dl = document.createElement('a');
+                    dl.setAttribute('href', content);//'data:text/csv;charset=utf-8,' + encodeURIComponent()
+                    dl.setAttribute('download', 'filename.txt');
+                    dl.click();
+                },
+                error: function (request, message, error) {
+                    var s = "";
+                }
+            });
+        }
+
+        function productDelete(ctl) {
+            var id = $(ctl).data("id");
+
+            $.ajax({
+                url: "/api/object/" + id,
+                type: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('usertoken')
+                },
+                success: function (product) {
+                    $(ctl).parents("tr").remove();
+                },
+                error: function (jqXHR) {
+                    var s = jqXHR.responseJSON.Message;
+                }
+            });
+        }
+    </script>
+    <div style="background-color:black"><h4 class="pull-right" style="color:white;padding-right:5px" id="spUN"></h4></div>
+    <div style="background-color:transparent;height:20px"></div>
+    <div class="col-md-10 col-md-offset-1" style="padding-top:5px">
+        <div class="well">
+            <input type="button" id="btnShow" class="btn btn-info" value="Load My Files" />
+            <input type="button" id="btnAdd" class="btn btn-info" value="Add/Update File" />
+            <input type="button" id="btnLogOff" class="btn btn-info pull-right" value="LogOff" />
+        </div>
+        <div id="datatablediv" class="well table-responsive hidden">
+            <table id="tblObjects" class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="display:none">ObjectId</th>
+                        <th>Filename</th>
+                        <th>Description</th>
+                        <th>Download</th>
+                        <th>Create/Update Time</th>
+                        <th>Songname</th>
+                        <th>Language</th>
+                        <th>Genre</th>
+                        <th>Made Public</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="tblObjectsBody">
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="modal fade" tabindex="1" id="divSessionExp" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                        <h4>success</h4>
+                    </div>
+                    <div class="modal-body">
+                       <form>
+                           <h2 class="modal-title">Session has expired. Login again after closing.</h2>
+                       </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn btn-success">
+                            close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divRegError" class="alert alert-danger collapse">
+            <a id="linkclose" class="close" href="#">&times;</a>
+            <div id="divRegErrorText">
+            </div>
+        </div>
+        <div class="modal fade" tabindex="1" id="divAddFileModal" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                        <h4>success</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="frmAddFile" name="frmAddFile" method="post" enctype="multipart/form-data">
+                            <table>
+                                <tr style="margin-top:2px">
+                                    <td>
+                                        <label>Description: </label>
+                                    </td>
+                                    <td>
+                                        <input id="txtFileDesc" type="text" name="txtFileDesc" required />
+                                    </td>
+                                </tr>
+                                <tr style="margin-top:2px">
+                                    <td>
+                                        <label>Songname: </label>
+                                    </td>
+                                    <td>
+                                        <input id="txtFileSong" type="text" name="txtFileSong" />
+                                    </td>
+                                </tr>
+                                <tr style="margin-top:2px">
+                                    <td>
+                                        <label>Language: </label>
+                                    </td>
+                                    <td>
+                                        <input id="txtFileLanguage" type="text" name="txtFileLanguage" />
+                                    </td>
+                                </tr>
+                                <tr style="margin-top:2px">
+                                    <td>
+                                        <label>Genre: </label>
+                                    </td>
+                                    <td>
+                                        <input id="txtFileGenre" type="text" name="txtFileGenre" />
+                                    </td>
+                                </tr>
+                                <tr style="margin-top:2px">
+                                    <td>
+                                        <label>Make Public: </label>
+                                    </td>
+                                    <td>
+                                        <input id="chkFilePublic" type="checkbox" name="chkFilePublic" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <span class="btn btn-primary btn-file">
+                                Browse...<input class="btn btn-success" id="fileAddFile" type="file" name="fileAddFile" required />
+                            </span>
+                            <br />
+                            <input style="margin-top:3px" class="btn btn-success" type="submit" value="Add/Update"/>
+                            <label id="lblFileAddSuccess" style="visibility:hidden; color:rgb(92, 184, 92);font-weight:700">File Added/Updated</label>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn btn-success">
+                            Close
+                        </button>
+                    </div>
+                    <div id="divAddFileModalError" class="alert alert-danger collapse">
+                        <a id="linkcloseAddFile" class="close" href="#">&times;</a>
+                        <div id="divAddFileModalErrorText">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
